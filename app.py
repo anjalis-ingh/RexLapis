@@ -8,7 +8,7 @@ with open('config.json') as f:
 
 # change only the no_category default string
 help_command = commands.DefaultHelpCommand(
-    no_category = 'Commands'
+    no_category = 'Basic Commands'
 )
 
 intents = Intents.default()
@@ -42,9 +42,9 @@ async def embed(ctx):
                            color = 0xFEC04B)
     # starter commands 
     desc1 = ("> **.status** - ask him what he has been up to in his free time :)\n\n"
-             "> **.pet** - hug, belly rub, or cuddle with rex lapis if you dare to...he may or may not like the gesture\n\n"
-             "> **.interact** - list of all interaction commands such as .feed, .advice, .gift, .pray\n\n"
-             "> **.shop** - displays the shop's inventory where you can buy treats and goodies for rex lapis\n\n"
+             "> **.interact** - list of all the interaction commands such as .feed, .advice, .gift, .pray\n\n"
+             "> **.games** - battle against Rex Lapis in minigames and win to get mora as a reward!\n\n"
+             "> **.shop** - displays the shop's inventory where you can buy treats and goodies for Rex Lapis\n\n"
              "> **.level** - check stats on your friendship and happiness levels, happiness points, and amount of mora\n\n"
     )
     embed.add_field(name="__Here are a few commands to get started!__", value = (desc1), inline=False)
@@ -89,10 +89,8 @@ async def embed(ctx):
              description ="Rex Lapis will state his mood or what hobby he was pursuing a little while back. Can be done every 8 hours.")
 async def embed(ctx):
     # should be used by user once every 8 hours 
-    global happinessPts
     # randomize which of the 7 statuses to choose from 
-    #randomNum = random.randint(1,7)
-    randomNum = 7
+    randomNum = random.randint(1,9)
     match randomNum:
         case 1:
             embed = nextcord.Embed(title = "Chilling", description = "Today has been a relaxing day. I hope tomorrow too shall be prosperous.", color = 0xFEC04B)
@@ -108,9 +106,9 @@ async def embed(ctx):
             await ctx.send(file=file, embed=embed)
 
             def check(m):
-                return m.author.id == ctx.author.id
+                return m.author.id == ctx.author.id 
             
-            message = await bot.wait_for('message', check=check)
+            m = await bot.wait_for("message", check=check)
             await ctx.send('Good to know, hope the rest of your day shall be prosperous!')
 
         case 3:
@@ -126,11 +124,11 @@ async def embed(ctx):
             await ctx.send(file=file, embed=embed)
 
             def check(m):
-                return m.author.id == ctx.author.id
+                return m.author.id == ctx.author.id 
             
-            message = await bot.wait_for('message', check=check)
-            if message.content == "yes": # HP +20
-                happinessPts += 20
+            m = await bot.wait_for("message", check=check)
+            if m.content == "yes": # HP +20
+                global_.happinessPts += 20
                 await ctx.send('I enjoyed your company today, lets hang out later if the opportunity arises! **HP +20**')
             else:
                 await ctx.send('No worries, I understand you must be very busy. Maybe next time I suppose.')
@@ -142,11 +140,11 @@ async def embed(ctx):
             await ctx.send(file=file, embed=embed)
 
             def check(m):
-                return m.author.id == ctx.author.id
+                return m.author.id == ctx.author.id 
             
-            message = await bot.wait_for('message', check=check)
-            if message.content == "yes": # HP +20
-                happinessPts += 20
+            m = await bot.wait_for("message", check=check)
+            if m.content == "yes": # HP +20
+                global_.happinessPts += 20
                 await ctx.send('Thank you for the token of appreciation. Bless your pulls my good lad. **HP +20**')
             else:
                 await ctx.send('I guess I remain a penniless dragon today -shrugs-')
@@ -154,17 +152,28 @@ async def embed(ctx):
         case 6: # Mora +20
             embed = nextcord.Embed(title = "Exploring", description = "I enjoy partaking in walks through the city — when time permits. Are you interested in exploring? If you'd like to see Liyue's tourist spots, I have a few references. I also found some treausres along the way, use it wisely! **Mora +20**", color = 0xFEC04B)
             file = nextcord.File("Images/11.png")
-            embed.set_image(url="attachment://5.png")
-            mora += 20
+            embed.set_image(url="attachment:/11.png")
+            global_.mora += 20
             await ctx.send(file=file, embed=embed)
         
         case 7: # Mora +20
             embed = nextcord.Embed(title = "Making a Gift", description = "Happen to remember a close friend of mine and wanting to return a gesture of kindness back. Because I am feeling so kind, here is some Mora for you. Spend it wisely. **Mora +20**", color = 0xFEC04B)
             file = nextcord.File("Images/12.png")
-            embed.set_image(url="attachment://5.png")
+            embed.set_image(url="attachment://12.png")
             global_.mora += 20
             await ctx.send(file=file, embed=embed)
+        case 8:
+            embed = nextcord.Embed(title="Camping", description="Went on a expedition recently, had time to think. For those that live too long, the friends of days gone by and scenes from their adventures live on in their memories. As such I want to say I have no regrets in meeting you, friend. Should the day ever come that we are not together, you will continue to shine like gold in my memories.", color = 0xFEC04B)
+            file = nextcord.File("Images/18.png")
+            embed.set_image(url="attachment://18.png")
+            await ctx.send(file=file, embed=embed)
+        case 9:
+            embed = nextcord.Embed(title="Shopping", description="Had some time off from my busy schedule and decided to partake in some shopping. One can never overspend on tea.")
+            file = nextcord.File("Images/19.png")
+            embed.set_image(url="attachment://19.png")
+            await ctx.send(file=file, embed=embed)
 
+# -------------- .terms --------------
 @bot.command(name="terms", brief="Explanation of unfamiliar terminology to members", description = "Words such as mora, happiness points, friendship level, and such are further explained in detail")
 async def embed(ctx):
     embed = nextcord.Embed(title = "Terminology", description="", color =0xFEC04B) 
@@ -180,4 +189,4 @@ async def sendGif(ctx):
     await ctx.send("May we meet again!", file = nextcord.File("rex lapis.gif"))
 
 # main runner 
-asyncio.run(main())
+asyncio.get_event_loop().run_until_complete(main())
