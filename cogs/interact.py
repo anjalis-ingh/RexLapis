@@ -1,4 +1,4 @@
-import nextcord, random, json, global_
+import nextcord, random, json, global_, sqlite3
 from nextcord import Intents
 from nextcord.ext import commands
 
@@ -54,13 +54,31 @@ class Interact_Commands(commands.Cog):
     # -------------- .gift -------------- 
     @commands.command(name="gift", brief="Feeling generous? Gift Rex Lapis some mora to help him out!", descripton = "Give Rex Lapis some mora as a token of appreication if your feeling nice today! Do .gift <amount> to specify how much mora to give")
     async def giveGift(self, ctx, amount: int):
+        member = ctx.author
         embed = nextcord.Embed(title="Gift Received!", description="Your well wishes are more than enough, but thank you. Bless your pulls my good lad. **HP** **+" + str(amount) + "** :two_hearts:", color=0xFEC04B)
-        global_.mora -= amount
+        db = sqlite3.connect("main.sqlite")
+        cur = db.cursor()
+        cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
+        mora = cur.fetchone()
+
+        try:
+            mora = mora[0]
+        except:
+            mora = 0
+        
+        sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
+        val = (mora - amount, member.id)
+        cur.execute(sql, val) 
+        
         global_.happinessPts += amount
 
         file = nextcord.File("Images/9.png")
         embed.set_image(url="attachment://9.png")
         await ctx.send(file=file, embed=embed)
+
+        db.commit()
+        cur.close()
+        db.close()
     
     # -------------- .pet -------------- 
     @commands.command(name="pet", brief="Hug, belly rub, or even cuddle with rex lapis if you dare to...", description = "Hug, belly rub, or even cuddle with rex lapis if you dare to...he may or may not like the gesture. HL can be increased or decreased through this interaction")
@@ -105,4 +123,4 @@ class Interact_Commands(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Interact_Commands(bot))
-    print("Setup Done 2!")
+    print("2!")

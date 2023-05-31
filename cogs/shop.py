@@ -1,4 +1,4 @@
-import nextcord, random, json, global_
+import nextcord, random, json, global_, sqlite3
 from nextcord import Intents
 from nextcord.ext import commands
 
@@ -35,30 +35,81 @@ class Shop_Commands(commands.Cog):
     # -------------- .buy -------------- 
     @commands.command(name="buy", brief="Buy a shop item by specifying the item # and quantity", description ="Buy a shop item by specifying the item # and quantity." + "Use `.buy <item #> <quantity>`" + " (e.g. `.buy 01 2`)\n")
     async def buyFood(self, ctx, itemNum: int, quantity: int):
+        member = ctx.author
         total = prices[itemNum] * quantity
-        if global_.mora > total:
-            global_.mora -= total
+
+        db = sqlite3.connect("main.sqlite")
+        cur = db.cursor()
+        cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
+        mora = cur.fetchone()
+
+        try:
+            mora = mora[0]
+        except:
+            mora = 0
+
+
+        if mora > total:
+            sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
+            val = (mora - total, member.id)
+            cur.execute(sql, val)
+
             await ctx.send("You have successfully bought `" + str(quantity) + " " + global_.food[itemNum] + "`. These item(s) are now in your inventory! (`.inventory`) :yum:")
             for i in range(0, quantity):
                 global_.inventory.append(global_.food[itemNum])
         else:
             await ctx.send("Seems like you are short on Mora! Complete daily commmisions by using `.commission` or try your luck in getting free Mora by using `.pull`")
 
+        db.commit()
+        cur.close()
+        db.close()
+
     # -------------- .balance -------------- 
     @commands.command(name="balance", brief="Display member's current balance (mora)", description ="Display current amount of mora the member has")
-    async def findBalance(self, ctx):
-        await ctx.send("Current Balance: **" + str(global_.mora) + " Mora** :purse:")
+    async def findBalance(self, ctx, member:nextcord.Member = None):
+        if member is None:
+            member = ctx.author 
+        
+        db = sqlite3.connect("main.sqlite")
+        cur = db.cursor()
+        cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
+        bal = cur.fetchone()
+        try:
+            mora = bal[0]
+        except:
+            mora = 0
+        
+        await ctx.send(f"Current Balance: **{mora} Mora** :purse:")
 
     # -------------- .pull -------------- 
     @commands.command(name="pull", brief="Try your luck to get a free dish or some mora!", description="Randomized pull where member can get a free dish or a specfic amount of Mora. Can be done every 24 hours.")
     async def pullItems(self, ctx):
+        member = ctx.author
+
         # pullItems: 10, 20, 50, 75, 100 (Mora), "Bamboo Shoot Soup", "Rice Buns", "Triple Layered Consomme", "Stir Fried Fish Noodle", "Tricolor Dango"
         pullMora = ["", 10, 20, 50, 75, 100]
         num = random.randint(1,10)
         
         if num < 6:
+            db = sqlite3.connect("main.sqlite")
+            cur = db.cursor()
+            cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
+            mora = cur.fetchone()
+
+            try:
+                mora = mora[0]
+            except:
+                mora = 0
+
+            sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
+            val = (mora + int(pullMora[num]), member.id)
+            cur.execute(sql, val)        
             await ctx.send(f'Congrats, you pulled {pullMora[num]} Mora. Try again tommorow! **Mora + {pullMora[num]}**')
-            global_.mora += pullMora[num]
+
+            db.commit()
+            cur.close()
+            db.close()
+
         else:
             await ctx.send(f'Congrats, you pulled a {global_.food[num-5]} dish! You can view this in `.inventory`. Try again tommorow! **HP** **+' + str(global_.buyHP[num-5]) + "**")
             global_.inventory.append(global_.food[num-5])
@@ -84,4 +135,4 @@ class Shop_Commands(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Shop_Commands(bot))
-    print("Setup Done!")
+    print("1!")
