@@ -13,8 +13,7 @@ class Interact_Commands(commands.Cog):
         desc1 = ("1. **.pet** - hug, belly rub, or even cuddle with rex lapis if you dare to...\n\n"
                  "2. **.feed <item #> <quantity>** - feed Rex Lapis with dishes bought from the shop, yum!\n\n"
                  "3. **.advice** - need of any wise words for your fellow dragon deity? ask Rex Lapis!\n\n"
-                 "4. **.pray** - one must pray to their God like they should to the mighty Rex Lapis\n\n"
-                 "5. **.gift <amount>** - feeling generous? gift Rex Lapis some mora to help out the broke dragon\n\n"
+                 "4. **.gift <amount>** - feeling generous? gift Rex Lapis some mora to help out the broke dragon\n\n"
         )
 
         embed = nextcord.Embed(title = "Interact with Rex Lapis!", description= (desc1), color=0xFEC04B)   
@@ -108,7 +107,8 @@ class Interact_Commands(commands.Cog):
                 value = global_.buyHP[itemNum] * quantity 
                 global_.updateHP(value, cur, member)
 
-            global_.addDish(itemNum, -quantity, cur, member)    
+            global_.addDish(itemNum, -quantity, cur, member)  
+            global_.hlUpdate(cur, member)  
             file = nextcord.File("Images/8.png")
             embed.set_image(url="attachment://8.png")
             await ctx.send(file=file, embed=embed)
@@ -147,13 +147,17 @@ class Interact_Commands(commands.Cog):
             mora = 0
             hp = 0
         
-        sql = ("UPDATE main SET mora = ?, hp = ? WHERE user_id = ?")
-        val = (mora - amount, hp + amount, member.id)
-        cur.execute(sql, val) 
+        if mora >= amount:
+            sql = ("UPDATE main SET mora = ?, hp = ? WHERE user_id = ?")
+            val = (mora - amount, hp + amount, member.id)
+            cur.execute(sql, val) 
+            global_.hlUpdate(cur, member)  
 
-        file = nextcord.File("Images/9.png")
-        embed.set_image(url="attachment://9.png")
-        await ctx.send(file=file, embed=embed)
+            file = nextcord.File("Images/9.png")
+            embed.set_image(url="attachment://9.png")
+            await ctx.send(file=file, embed=embed)
+        else:
+            await ctx.send("Appreciate the gesture, but it seems like you are broke like me :broken_heart: You can earn mora through playing `.games` or other interactions.")
 
         db.commit()
         cur.close()
@@ -198,12 +202,13 @@ class Interact_Commands(commands.Cog):
                 await ctx.send(file=file, embed=embed)
             # rejected
             case 5:
-                embed = nextcord.Embed(title="Nope.", description="You shall suffer the Wrath of the Rock for touching me human **HP -20**", color =0xFEC04B)
+                embed = nextcord.Embed(title="Nope.", description="You shall suffer the Wrath of the Rock for touching me human **HP -10**", color =0xFEC04B)
                 file = nextcord.File("Images/1.png")
                 embed.set_image(url="attachment://1.png")
                 global_.updateHP(-10, cur, member)
                 await ctx.send(file=file, embed=embed)
-        
+
+        global_.hlUpdate(cur, member)  
         db.commit()
         cur.close()
         db.close()

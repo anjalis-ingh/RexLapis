@@ -37,6 +37,7 @@ class Shop_Commands(commands.Cog):
         embed.add_field(name="__Cost__", value = (desc3), inline=True)
         
         embed.add_field(name="How to Buy" + " :moneybag:", value = "Use `.buy <item #> <quantity>`" + " (e.g. `.buy 1 2`)\n", inline=False)
+        embed.add_field(name="Want to Try Your Luck?" + " :red_envelope:", value = "Use `.pull` daily to get a free, guaranteed food dish or mora!\n", inline=False)
 
         file = nextcord.File("Images/10.png")
         embed.set_thumbnail(url="attachment://10.png")
@@ -64,7 +65,7 @@ class Shop_Commands(commands.Cog):
             cur.execute(sql, val)
             
             global_.addDish(itemNum, quantity, cur, member)
-            await ctx.send("You have successfully bought `" + str(quantity) + " " + global_.food[itemNum] + "`. These item(s) are now in your inventory! (`.inventory`) :yum:")
+            await ctx.send("You have successfully bought `" + str(quantity) + " " + global_.food[itemNum] + "`. View your item(s) in your inventory (`.inventory`) and mora in your current balance (`.balance')! :yum:")
         else:
             await ctx.send("Seems like you are short on Mora! Complete daily commmisions by using `.commission` or try your luck in getting free Mora by using `.pull`")
 

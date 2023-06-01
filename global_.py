@@ -1,6 +1,35 @@
-import nextcord, random, json, global_, sqlite3
+import nextcord, random, json, global_, sqlite3, math
 from nextcord.ext import commands
 
+# -------------- check for friendshio level updates --------------
+def hlUpdate(cur, member):
+    cur.execute(f"SELECT hp FROM main")
+    hp = cur.fetchall()
+    c = 0
+    for i in hp:
+        c = sum(i[0])
+
+    current = math.floor(c/100)
+    if current >  global_.friendshipLvl:
+        global_.friendshipLvl = current
+
+# -------------- check for happiness level updates --------------
+def hlUpdate(cur, member):
+    cur.execute(f"SELECT hp, level FROM main WHERE user_id = {member.id}")
+    data = cur.fetchone()
+    try:
+        hp = data[0]
+        level = data[1]
+    except:
+        hp = 0
+        level = 0
+    value = math.floor(hp/50)
+    if value > level:
+        sql = ("UPDATE main SET level = ? WHERE user_id = ?")
+        val = (value, member.id)
+        cur.execute(sql, val) 
+
+# -------------- update member's current balance (mora) --------------
 def updateMora(value, cur, member):
     cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
     mora = cur.fetchone()
@@ -13,6 +42,7 @@ def updateMora(value, cur, member):
     val = (mora + value, member.id)
     cur.execute(sql, val) 
 
+# -------------- update happiness points --------------
 def updateHP(value, cur, member):
     cur.execute(f"SELECT hp FROM main WHERE user_id = {member.id}")
     hp = cur.fetchone()
@@ -101,7 +131,6 @@ noodles = 0
 dango = 0
 
 # arrays
-inventory = [""]
 food = ["", "Bamboo Shoot Soup", "Rice Buns", "Triple Layered Consomme", "Stir Fried Fish Noodle", "Tricolor Dango"]
 itemNum = [0, 1, 2, 3, 4, 5]
 buyHP = [0, 50, 15, 5, 25, 10]

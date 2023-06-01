@@ -66,21 +66,23 @@ async def embed(ctx, member:nextcord.Member = None):
         
     db = sqlite3.connect("main.sqlite")
     cur = db.cursor()
-    cur.execute(f"SELECT mora, hp FROM main WHERE user_id = {member.id}")
+    cur.execute(f"SELECT mora, hp, level FROM main WHERE user_id = {member.id}")
     bal = cur.fetchone()
     try:
         mora = bal[0]
         hp = bal[1]
+        level = bal[2]
     except:
         mora = 0 
         hp = 0
+        level = 0
 
     randomName = random.choice(names)
     embed = nextcord.Embed(title = "Current Stats", description="", color = 0xFEC04B)
     embed.add_field(name="Name", value=randomName, inline=True)
     embed.add_field(name="Balance (Mora)", value=mora, inline=True)
     embed.add_field(name="Friendship Level", value=global_.friendshipLvl, inline=False)
-    embed.add_field(name="Happiness Level", value=global_.happinessLvl, inline=False)
+    embed.add_field(name="Happiness Level", value=level, inline=False)
     embed.add_field(name="Happiness Points", value=hp, inline=False)
 
 
@@ -148,6 +150,7 @@ async def embed(ctx):
             m = await bot.wait_for("message", check=check)
             if m.content == "yes": # HP +20
                 global_.updateHP(20, cur, member)
+                global_.hlUpdate(cur, member)  
                 await ctx.send('I enjoyed your company today, lets hang out later if the opportunity arises! **HP +20**')
             else:
                 await ctx.send('No worries, I understand you must be very busy. Maybe next time I suppose.')
@@ -177,6 +180,7 @@ async def embed(ctx):
                     sql = ("UPDATE main, hp SET mora = ?, hp = ? WHERE user_id = ?")
                     val = (mora - 100, hp + 40, member.id)
                     cur.execute(sql, val) 
+                    global_.hlUpdate(cur, member)  
                     await ctx.send('Thank you for the token of appreciation. Bless your pulls my good lad. **HP +40, Mora -100**')
                 else:
                     await ctx.send('Seems like you are broke too lad. Oh well, thanks for wanting to help!')

@@ -9,7 +9,7 @@ class Level_Eco_System(commands.Cog):
     async def listen1(self):
         db = sqlite3.connect("main.sqlite")
         cur = db.cursor()
-        cur.execute('''CREATE TABLE IF NOT EXISTS main (user_id INTEGER, mora INTEGER, hp INTEGER)''')
+        cur.execute('''CREATE TABLE IF NOT EXISTS main (user_id INTEGER, mora INTEGER, hp INTEGER, level INTEGER)''')
         cur.execute('''CREATE TABLE IF NOT EXISTS dishes (user_id INTEGER, soup INTEGER, buns INTEGER, consomme INTEGER, noodles INTEGER, dango INTEGER)''')
     
     @commands.Cog.listener("on_message")
@@ -24,8 +24,8 @@ class Level_Eco_System(commands.Cog):
         cur.execute(f"SELECT user_id FROM main WHERE user_id = {author.id}")
         result = cur.fetchone()
         if result is None:
-            sql = ("INSERT INTO main(user_id, mora, hp) VALUES (?, ?, ?)")
-            val = (author.id, global_.mora, global_.happinessPts)
+            sql = ("INSERT INTO main(user_id, mora, hp, level) VALUES (?, ?, ?, ?)")
+            val = (author.id, global_.mora, global_.happinessPts, global_.happinessLvl)
             cur.execute(sql, val)
         
         cur.execute(f"SELECT user_id FROM dishes WHERE user_id = {author.id}")
