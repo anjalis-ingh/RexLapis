@@ -1,8 +1,7 @@
 import nextcord, random, json, global_, sqlite3
-from nextcord import Intents
 from nextcord.ext import commands
 
-# shop arrays 
+ # shop arrays 
 prices = [0, 500, 125, 500, 250, 75]
 
 # -------------- SHOP COMMANDS -----------------
@@ -18,7 +17,18 @@ class Shop_Commands(commands.Cog):
     @commands.command(name = "shop", brief ="Displays the shop's inventory of treats and goodies", 
                 description = "Displays all of the shop's inventory of items which the user can buy. These items can be purchased and given to Rex Lapis or delivered to other members on the server")
     async def embed(self, ctx):
-        embed = nextcord.Embed(title="Welcome to the Wanmin Restaurant!", description="Current Balance: " + str(global_.mora) + " Mora" + " :coin:", color = 0xFEC04B)
+        member = ctx.author
+        
+        db = sqlite3.connect("main.sqlite")
+        cur = db.cursor()
+        cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
+        mora = cur.fetchone()
+        try:
+            mora = mora[0]
+        except:
+            mora = 0 
+
+        embed = nextcord.Embed(title="Welcome to the Wanmin Restaurant!", description="Current Balance: " + str(mora) + " Mora" + " :coin:", color = 0xFEC04B)
         desc2 = (f'{global_.food[1]}\n' f'{global_.food[2]}\n' f'{global_.food[3]}\n' f'{global_.food[4]}\n' f'{global_.food[5]}\n')
         desc3 = (f'{prices[1]}\n' f'{prices[2]}\n' f'{prices[3]}\n' f'{prices[4]}\n' f'{prices[5]}\n')
 
@@ -48,15 +58,13 @@ class Shop_Commands(commands.Cog):
         except:
             mora = 0
 
-
-        if mora > total:
+        if mora >= total:
             sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
             val = (mora - total, member.id)
             cur.execute(sql, val)
-
+            
+            global_.addDish(itemNum, quantity, cur, member)
             await ctx.send("You have successfully bought `" + str(quantity) + " " + global_.food[itemNum] + "`. These item(s) are now in your inventory! (`.inventory`) :yum:")
-            for i in range(0, quantity):
-                global_.inventory.append(global_.food[itemNum])
         else:
             await ctx.send("Seems like you are short on Mora! Complete daily commmisions by using `.commission` or try your luck in getting free Mora by using `.pull`")
 
@@ -73,9 +81,9 @@ class Shop_Commands(commands.Cog):
         db = sqlite3.connect("main.sqlite")
         cur = db.cursor()
         cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
-        bal = cur.fetchone()
+        mora = cur.fetchone()
         try:
-            mora = bal[0]
+            mora = mora[0]
         except:
             mora = 0
         
@@ -89,42 +97,51 @@ class Shop_Commands(commands.Cog):
         # pullItems: 10, 20, 50, 75, 100 (Mora), "Bamboo Shoot Soup", "Rice Buns", "Triple Layered Consomme", "Stir Fried Fish Noodle", "Tricolor Dango"
         pullMora = ["", 10, 20, 50, 75, 100]
         num = random.randint(1,10)
+
+        db = sqlite3.connect("main.sqlite")
+        cur = db.cursor()
         
         if num < 6:
-            db = sqlite3.connect("main.sqlite")
-            cur = db.cursor()
-            cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
-            mora = cur.fetchone()
-
-            try:
-                mora = mora[0]
-            except:
-                mora = 0
-
-            sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
-            val = (mora + int(pullMora[num]), member.id)
-            cur.execute(sql, val)        
+            global_.updateMora(pullMora[num], cur, member)   
             await ctx.send(f'Congrats, you pulled {pullMora[num]} Mora. Try again tommorow! **Mora + {pullMora[num]}**')
-
-            db.commit()
-            cur.close()
-            db.close()
-
-        else:
-            await ctx.send(f'Congrats, you pulled a {global_.food[num-5]} dish! You can view this in `.inventory`. Try again tommorow! **HP** **+' + str(global_.buyHP[num-5]) + "**")
-            global_.inventory.append(global_.food[num-5])
-            global_.happinessPts += global_.buyHP[num-5]
+        else:            
+            global_.addDish(global_.itemNum[num-5], 1, cur, member)
+            await ctx.send(f'Congrats, you pulled a {global_.food[num-5]} dish! You can view this in `.inventory`. Try again tommorow!')
+        
+        db.commit()
+        cur.close()
+        db.close()
     
     # -------------- .inventory -------------- 
     @commands.command(name="inventory", brief="View all of your dishes here", description="Any dishes bought from the store or earned by pull can be viewed here")
-    async def invItems(self, ctx):
+    async def invItems(self, ctx, member:nextcord.Member = None):
+        if member is None:
+            member = ctx.author 
+        
+        db = sqlite3.connect("main.sqlite")
+        cur = db.cursor()
+        cur.execute(f"SELECT soup, buns, consomme, noodles, dango FROM dishes WHERE user_id = {member.id}")
+        inv = cur.fetchone()
+
+        try:
+            soup = inv[0]
+            buns = inv[1]
+            consomme = inv[2]
+            noodles = inv[3]
+            dango = inv[4]
+        except:
+            soup = 0
+            buns = 0
+            consomme = 0
+            noodles = 0
+            dango = 0
+
+        desc0 = (f'{global_.itemNum[1]}\n' f'{global_.itemNum[2]}\n' f'{global_.itemNum[3]}\n' f'{global_.itemNum[4]}\n' f'{global_.itemNum[5]}\n')
         desc1 = (f'{global_.food[1]}\n' f'{global_.food[2]}\n' f'{global_.food[3]}\n' f'{global_.food[4]}\n' f'{global_.food[5]}\n')
-        desc2 = (f'{global_.inventory.count(global_.food[1])}\n' f'{global_.inventory.count(global_.food[2])}\n' f'{global_.inventory.count(global_.food[3])}\n'
-                 f'{global_.inventory.count(global_.food[4])}\n' f'{global_.inventory.count(global_.food[5])}\n'
-        )
+        desc2 = (f'{soup}\n' f'{buns}\n' f'{consomme}\n' f'{noodles}\n' f'{dango}\n')
 
         embed = nextcord.Embed(title = "Inventory", description="", color = 0xFEC04B)
-        embed.add_field(name="__Item #__", value = "1\n" "2\n" "3\n" "4\n" "5\n", inline=True)
+        embed.add_field(name="__Item #__", value = (desc0), inline=True)
         embed.add_field(name="__Dishes__", value = (desc1), inline=True)
         embed.add_field(name = "__Quantity__", value = (desc2), inline =True)
         embed.add_field(name="Want to give Rex Lapis a treat?" + " :cookie:", value = "Use `.feed <item #> <quantity>`" + " (e.g. `.feed 1 2`)\n", inline=False)

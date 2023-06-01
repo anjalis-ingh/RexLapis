@@ -66,12 +66,14 @@ async def embed(ctx, member:nextcord.Member = None):
         
     db = sqlite3.connect("main.sqlite")
     cur = db.cursor()
-    cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
+    cur.execute(f"SELECT mora, hp FROM main WHERE user_id = {member.id}")
     bal = cur.fetchone()
     try:
         mora = bal[0]
+        hp = bal[1]
     except:
         mora = 0 
+        hp = 0
 
     randomName = random.choice(names)
     embed = nextcord.Embed(title = "Current Stats", description="", color = 0xFEC04B)
@@ -79,7 +81,7 @@ async def embed(ctx, member:nextcord.Member = None):
     embed.add_field(name="Balance (Mora)", value=mora, inline=True)
     embed.add_field(name="Friendship Level", value=global_.friendshipLvl, inline=False)
     embed.add_field(name="Happiness Level", value=global_.happinessLvl, inline=False)
-    embed.add_field(name="Happiness Points", value=global_.happinessPts, inline=False)
+    embed.add_field(name="Happiness Points", value=hp, inline=False)
 
 
     file = nextcord.File("Images/3.png")
@@ -145,7 +147,7 @@ async def embed(ctx):
             
             m = await bot.wait_for("message", check=check)
             if m.content == "yes": # HP +20
-                global_.happinessPts += 20
+                global_.updateHP(20, cur, member)
                 await ctx.send('I enjoyed your company today, lets hang out later if the opportunity arises! **HP +20**')
             else:
                 await ctx.send('No worries, I understand you must be very busy. Maybe next time I suppose.')
@@ -161,19 +163,20 @@ async def embed(ctx):
             m = await bot.wait_for("message", check=check)
 
             if m.content == "yes": # HP +40 Mora -100
-                cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
-                mora = cur.fetchone()
+                cur.execute(f"SELECT mora, hp FROM main WHERE user_id = {member.id}")
+                bal = cur.fetchone()
+
+                try:
+                    mora = bal[0]
+                    hp = bal[1]
+                except:
+                    mora = 0
+                    hp = 0
 
                 if int(mora) >= 100:
-                    try:
-                        mora = mora[0]
-                    except:
-                        mora = 0
-
-                    sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
-                    val = (mora - 100, member.id)
+                    sql = ("UPDATE main, hp SET mora = ?, hp = ? WHERE user_id = ?")
+                    val = (mora - 100, hp + 40, member.id)
                     cur.execute(sql, val) 
-                    global_.happinessPts += 40
                     await ctx.send('Thank you for the token of appreciation. Bless your pulls my good lad. **HP +40, Mora -100**')
                 else:
                     await ctx.send('Seems like you are broke too lad. Oh well, thanks for wanting to help!')
@@ -185,17 +188,7 @@ async def embed(ctx):
             file = nextcord.File("Images/11.png")
             embed.set_image(url="attachment:/11.png")
 
-            cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
-            mora = cur.fetchone()
-            try:
-                mora = mora[0]
-            except:
-                mora = 0
-
-            sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
-            val = (mora + 20, member.id)
-            cur.execute(sql, val) 
-
+            global_.updateMora(20, cur, member)
             await ctx.send(file=file, embed=embed)
         
         case 7: # Mora +20
@@ -203,17 +196,7 @@ async def embed(ctx):
             file = nextcord.File("Images/12.png")
             embed.set_image(url="attachment://12.png")
 
-            cur.execute(f"SELECT mora FROM main WHERE user_id = {member.id}")
-            mora = cur.fetchone()
-            try:
-                mora = mora[0]
-            except:
-                mora = 0
-
-            sql = ("UPDATE main SET mora = ? WHERE user_id = ?")
-            val = (mora + 20, member.id)
-            cur.execute(sql, val) 
-
+            global_.updateMora(20, cur, member)
             await ctx.send(file=file, embed=embed)
         case 8:
             embed = nextcord.Embed(title="Camping", description="Went on a expedition recently, had time to think. For those that live too long, the friends of days gone by and scenes from their adventures live on in their memories. As such I want to say I have no regrets in meeting you, friend. Should the day ever come that we are not together, you will continue to shine like gold in my memories.", color = 0xFEC04B)
