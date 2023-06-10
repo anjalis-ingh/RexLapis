@@ -1,20 +1,20 @@
 import nextcord, random, json, global_, sqlite3, math
 from nextcord.ext import commands
 
-# -------------- check for friendship level updates --------------
-def flUpdate(cur, member):
+# -------------- check for happiness level updates --------------
+def hlUpdate(cur, member):
     cur.execute("SELECT hp FROM main")
     data = cur.fetchall()
     tot = 0
     for row in data:
         tot += row[0]
-        
-    current = math.floor(tot/100)
-    if current >  global_.friendshipLvl:
-        global_.friendshipLvl = current
 
-# -------------- check for happiness level updates --------------
-def hlUpdate(cur, member):
+    current = math.floor(tot/100)
+    if current >  global_.happinessLvl:
+        global_.happinessLvl = current
+
+# -------------- check for friendship level updates --------------
+def flUpdate(cur, member):
     cur.execute(f"SELECT hp, level FROM main WHERE user_id = {member.id}")
     data = cur.fetchone()
     try:
@@ -133,4 +133,4 @@ dango = 0
 # arrays
 food = ["", "Bamboo Shoot Soup", "Rice Buns", "Triple Layered Consomme", "Stir Fried Fish Noodle", "Tricolor Dango"]
 itemNum = [0, 1, 2, 3, 4, 5]
-buyHP = [0, 50, 15, 5, 25, 10]
+buyHP = [0, 50, 15, 50, 25, 10]

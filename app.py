@@ -80,8 +80,8 @@ async def embed(ctx, member:nextcord.Member = None):
     embed = nextcord.Embed(title = "Current Stats", description="", color = 0xFEC04B)
     embed.add_field(name="Name", value=randomName, inline=True)
     embed.add_field(name="Balance (Mora)", value=mora, inline=True)
-    embed.add_field(name="Friendship Level", value=global_.friendshipLvl, inline=False)
-    embed.add_field(name="Happiness Level", value=level, inline=False)
+    embed.add_field(name="Friendship Level", value=level, inline=False)
+    embed.add_field(name="Happiness Level", value=global_.happinessLvl, inline=False)
     embed.add_field(name="Happiness Points", value=hp, inline=False)
 
     embed.set_footer(text=member.display_name, icon_url=member.display_avatar)
@@ -149,8 +149,8 @@ async def rexStatus(ctx):
             m = await bot.wait_for("message", check=check)
             if m.content == "yes": # HP +20
                 global_.updateHP(20, cur, member)
-                global_.hlUpdate(cur, member)  
-                global_.flUpdate(cur, member)
+                global_.flUpdate(cur, member)  
+                global_.hlUpdate(cur, member)
                 await ctx.send('I enjoyed your company today, lets hang out later if the opportunity arises! **HP +20**')
             else:
                 await ctx.send('No worries, I understand you must be very busy. Maybe next time I suppose.')
@@ -180,8 +180,8 @@ async def rexStatus(ctx):
                     sql = ("UPDATE main, hp SET mora = ?, hp = ? WHERE user_id = ?")
                     val = (mora - 100, hp + 40, member.id)
                     cur.execute(sql, val) 
-                    global_.hlUpdate(cur, member)  
-                    global_.flUpdate(cur, member)
+                    global_.flUpdate(cur, member)  
+                    global_.hlUpdate(cur, member)
                     await ctx.send('Thank you for the token of appreciation. Bless your pulls my good lad. **HP +40, Mora -100**')
                 else:
                     await ctx.send('Seems like you are broke too lad. Oh well, thanks for wanting to help!')

@@ -108,8 +108,8 @@ class Interact_Commands(commands.Cog):
                 global_.updateHP(value, cur, member)
 
             global_.addDish(itemNum, -quantity, cur, member)  
-            global_.hlUpdate(cur, member)  
-            global_.flUpdate(cur, member)
+            global_.flUpdate(cur, member)  
+            global_.hlUpdate(cur, member)
             file = nextcord.File("Images/8.png")
             embed.set_image(url="attachment://8.png")
             await ctx.send(file=file, embed=embed)
@@ -152,8 +152,8 @@ class Interact_Commands(commands.Cog):
             sql = ("UPDATE main SET mora = ?, hp = ? WHERE user_id = ?")
             val = (mora - amount, hp + amount, member.id)
             cur.execute(sql, val) 
-            global_.hlUpdate(cur, member)  
-            global_.flUpdate(cur, member)
+            global_.flUpdate(cur, member)  
+            global_.hlUpdate(cur, member)
 
             file = nextcord.File("Images/9.png")
             embed.set_image(url="attachment://9.png")
@@ -211,15 +211,15 @@ class Interact_Commands(commands.Cog):
                 global_.updateHP(-10, cur, member)
                 await ctx.send(file=file, embed=embed)
 
-        global_.hlUpdate(cur, member)  
-        global_.flUpdate(cur, member)
+        global_.flUpdate(cur, member)  
+        global_.hlUpdate(cur, member)
         db.commit()
         cur.close()
         db.close()
 
-    # error message for pull command
+    # error message for pet command
     @pet.error
-    async def pet_error(ctx, error):
+    async def pet_error(self, ctx, error):
         if isinstance(error, commands.CommandOnCooldown):
             await ctx.send(f'I do not wish to be touched anymore human, that is quite enough for nowTry again in {round(error.retry_after, 1)} seconds.')
 
