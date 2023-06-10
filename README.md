@@ -18,7 +18,7 @@ Have you ever imagined having a virtual relationship with a loveable, yet knowle
 
 .shop                     | .inventory                   | .level
 :-------------------------:|:-------------------------:|:-------------------------:
-<img width="595" alt="Screen Shot 2023-06-10 at 12 44 21 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/58f2dab8-6796-45c4-a516-927435e51bf8"> | <img width="561" alt="Screen Shot 2023-06-10 at 12 44 44 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/0e8b2125-faac-48ae-8d16-7371eaec7e13"> | <img width="427" alt="Screen Shot 2023-06-10 at 1 38 46 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/e53ee354-4863-436a-99ea-1fc4da81c5dd">
+<img width="795" alt="Screen Shot 2023-06-10 at 12 44 21 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/58f2dab8-6796-45c4-a516-927435e51bf8"> | <img width="761" alt="Screen Shot 2023-06-10 at 12 44 44 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/0e8b2125-faac-48ae-8d16-7371eaec7e13"> | <img width="627" alt="Screen Shot 2023-06-10 at 1 38 46 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/e53ee354-4863-436a-99ea-1fc4da81c5dd">
 
 .interact                     | .feed                   | .pet
 :-------------------------:|:-------------------------:|:-------------------------:
