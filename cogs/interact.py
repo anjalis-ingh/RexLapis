@@ -109,6 +109,7 @@ class Interact_Commands(commands.Cog):
 
             global_.addDish(itemNum, -quantity, cur, member)  
             global_.hlUpdate(cur, member)  
+            global_.flUpdate(cur, member)
             file = nextcord.File("Images/8.png")
             embed.set_image(url="attachment://8.png")
             await ctx.send(file=file, embed=embed)
@@ -152,6 +153,7 @@ class Interact_Commands(commands.Cog):
             val = (mora - amount, hp + amount, member.id)
             cur.execute(sql, val) 
             global_.hlUpdate(cur, member)  
+            global_.flUpdate(cur, member)
 
             file = nextcord.File("Images/9.png")
             embed.set_image(url="attachment://9.png")
@@ -164,8 +166,9 @@ class Interact_Commands(commands.Cog):
         db.close()
     
     # -------------- .pet -------------- 
-    @commands.command(name="pet", brief="Hug, belly rub, or even cuddle with rex lapis if you dare to...", description = "Hug, belly rub, or even cuddle with rex lapis if you dare to...he may or may not like the gesture. HL can be increased or decreased through this interaction")
-    async def embed(self, ctx):
+    @commands.command(name="pet", brief="Hug, belly rub, or even cuddle with rex lapis if you dare to...", description = "Hug, belly rub, or even cuddle with rex lapis if you dare to...he may or may not like the gesture. HL can be increased or decreased through this interaction. Can be done twice every hour")
+    @commands.cooldown(2, 3600, commands.BucketType.user)
+    async def pet(self, ctx):
         member = ctx.author
         db = sqlite3.connect("main.sqlite")
         cur = db.cursor()
@@ -209,10 +212,16 @@ class Interact_Commands(commands.Cog):
                 await ctx.send(file=file, embed=embed)
 
         global_.hlUpdate(cur, member)  
+        global_.flUpdate(cur, member)
         db.commit()
         cur.close()
         db.close()
 
+    # error message for pull command
+    @pet.error
+    async def pet_error(ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(f'I do not wish to be touched anymore human, that is quite enough for nowTry again in {round(error.retry_after, 1)} seconds.')
+
 def setup(bot):
     bot.add_cog(Interact_Commands(bot))
-    print("2!")

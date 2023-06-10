@@ -1,15 +1,15 @@
 import nextcord, random, json, global_, sqlite3, math
 from nextcord.ext import commands
 
-# -------------- check for friendshio level updates --------------
-def hlUpdate(cur, member):
-    cur.execute(f"SELECT hp FROM main")
-    hp = cur.fetchall()
-    c = 0
-    for i in hp:
-        c = sum(i[0])
-
-    current = math.floor(c/100)
+# -------------- check for friendship level updates --------------
+def flUpdate(cur, member):
+    cur.execute("SELECT hp FROM main")
+    data = cur.fetchall()
+    tot = 0
+    for row in data:
+        tot += row[0]
+        
+    current = math.floor(tot/100)
     if current >  global_.friendshipLvl:
         global_.friendshipLvl = current
 

@@ -42,4 +42,3 @@ class Level_Eco_System(commands.Cog):
 
 def setup(bot):
     bot.add_cog(Level_Eco_System(bot))
-    print("3!")

@@ -25,7 +25,6 @@ async def load():
     for filename in os.listdir('./cogs'):
         if filename.endswith('.py'):
             bot.load_extension(f'cogs.{filename[:-3]}')
-            print("File loaded!")
 
 # main
 async def main():
@@ -85,7 +84,7 @@ async def embed(ctx, member:nextcord.Member = None):
     embed.add_field(name="Happiness Level", value=level, inline=False)
     embed.add_field(name="Happiness Points", value=hp, inline=False)
 
-
+    embed.set_footer(text=member.display_name, icon_url=member.display_avatar)
     file = nextcord.File("Images/3.png")
     embed.set_thumbnail(url="attachment://3.png")
     await ctx.send(file=file, embed=embed)
@@ -102,15 +101,15 @@ async def embed(ctx):
 
 # -------------- .status --------------
 @bot.command(name="status", brief="Ask Rex Lapis what he has been up to during his free time :)", 
-             description ="Rex Lapis will state his mood or what hobby he was pursuing a little while back. Can be done every 8 hours.")
-async def embed(ctx):
+             description ="Rex Lapis will state his mood or what hobby he was pursuing a little while back. Can be done once every 6 hours.")
+@commands.cooldown(1, 21600, commands.BucketType.user)
+async def rexStatus(ctx):
     member = ctx.author
 
     db = sqlite3.connect("main.sqlite")
     cur = db.cursor()
     
-    # should be used by user once every 8 hours 
-    # randomize which of the 7 statuses to choose from 
+    # randomize which of the 9 statuses to choose from 
     randomNum = random.randint(1,9)
     match randomNum:
         case 1:
@@ -151,6 +150,7 @@ async def embed(ctx):
             if m.content == "yes": # HP +20
                 global_.updateHP(20, cur, member)
                 global_.hlUpdate(cur, member)  
+                global_.flUpdate(cur, member)
                 await ctx.send('I enjoyed your company today, lets hang out later if the opportunity arises! **HP +20**')
             else:
                 await ctx.send('No worries, I understand you must be very busy. Maybe next time I suppose.')
@@ -181,6 +181,7 @@ async def embed(ctx):
                     val = (mora - 100, hp + 40, member.id)
                     cur.execute(sql, val) 
                     global_.hlUpdate(cur, member)  
+                    global_.flUpdate(cur, member)
                     await ctx.send('Thank you for the token of appreciation. Bless your pulls my good lad. **HP +40, Mora -100**')
                 else:
                     await ctx.send('Seems like you are broke too lad. Oh well, thanks for wanting to help!')
@@ -208,7 +209,7 @@ async def embed(ctx):
             embed.set_image(url="attachment://18.png")
             await ctx.send(file=file, embed=embed)
         case 9:
-            embed = nextcord.Embed(title="Shopping", description="Had some time off from my busy schedule and decided to partake in some shopping. One can never overspend on tea.")
+            embed = nextcord.Embed(title="Shopping", description="Had some time off from my busy schedule and decided to partake in some shopping. One can never overspend on tea.", color = 0xFEC04B)
             file = nextcord.File("Images/19.png")
             embed.set_image(url="attachment://19.png")
             await ctx.send(file=file, embed=embed)
@@ -231,6 +232,12 @@ async def embed(ctx):
 @bot.command(name="bye", brief = "Say bye to Rex Lapis and sign off!", description = "Rex Lapis waves bye back to you :)")
 async def sendGif(ctx):
     await ctx.send("May we meet again!", file = nextcord.File("rex lapis.gif"))
+
+# error message for status command
+@rexStatus.error
+async def rexStatus_error(ctx, error):
+    if isinstance(error, commands.CommandOnCooldown):
+        await ctx.send(f'You already asked how my day was child. Try again in {round(error.retry_after, 1)} seconds.')
 
 # main runner 
 asyncio.get_event_loop().run_until_complete(main())

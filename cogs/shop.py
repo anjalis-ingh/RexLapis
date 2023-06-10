@@ -37,7 +37,7 @@ class Shop_Commands(commands.Cog):
         embed.add_field(name="__Cost__", value = (desc3), inline=True)
         
         embed.add_field(name="How to Buy" + " :moneybag:", value = "Use `.buy <item #> <quantity>`" + " (e.g. `.buy 1 2`)\n", inline=False)
-        embed.add_field(name="Want to Try Your Luck?" + " :red_envelope:", value = "Use `.pull` daily to get a free, guaranteed food dish or mora!\n", inline=False)
+        embed.add_field(name="Want to Try Your Luck?" + " :red_envelope:", value = "Use `.pull` 2x daily to get a free, guaranteed food dish or mora!\n", inline=False)
 
         file = nextcord.File("Images/10.png")
         embed.set_thumbnail(url="attachment://10.png")
@@ -65,7 +65,7 @@ class Shop_Commands(commands.Cog):
             cur.execute(sql, val)
             
             global_.addDish(itemNum, quantity, cur, member)
-            await ctx.send("You have successfully bought `" + str(quantity) + " " + global_.food[itemNum] + "`. View your item(s) in your inventory (`.inventory`) and mora in your current balance (`.balance')! :yum:")
+            await ctx.send("You have successfully bought `" + str(quantity) + " " + global_.food[itemNum] + "`. View your item(s) in your inventory (`.inventory`) and mora in your current balance (`.balance`)! :yum:")
         else:
             await ctx.send("Seems like you are short on Mora! Complete daily commmisions by using `.commission` or try your luck in getting free Mora by using `.pull`")
 
@@ -91,7 +91,8 @@ class Shop_Commands(commands.Cog):
         await ctx.send(f"Current Balance: **{mora} Mora** :purse:")
 
     # -------------- .pull -------------- 
-    @commands.command(name="pull", brief="Try your luck to get a free dish or some mora!", description="Randomized pull where member can get a free dish or a specfic amount of Mora. Can be done every 24 hours.")
+    @commands.command(name="pull", brief="Try your luck to get a free dish or some mora!", description="Randomized pull where member can get a free dish or a specfic amount of Mora. Can be done twice every 24 hours.")
+    @commands.cooldown(2, 86400, commands.BucketType.user)
     async def pullItems(self, ctx):
         member = ctx.author
 
@@ -104,10 +105,10 @@ class Shop_Commands(commands.Cog):
         
         if num < 6:
             global_.updateMora(pullMora[num], cur, member)   
-            await ctx.send(f'Congrats, you pulled {pullMora[num]} Mora. Try again tommorow! **Mora + {pullMora[num]}**')
+            await ctx.send(f'Congrats, you pulled {pullMora[num]} Mora. **Mora + {pullMora[num]}**')
         else:            
             global_.addDish(global_.itemNum[num-5], 1, cur, member)
-            await ctx.send(f'Congrats, you pulled a {global_.food[num-5]} dish! You can view this in `.inventory`. Try again tommorow!')
+            await ctx.send(f'Congrats, you pulled a {global_.food[num-5]} dish! You can view this in `.inventory`.')
         
         db.commit()
         cur.close()
@@ -151,6 +152,11 @@ class Shop_Commands(commands.Cog):
         embed.set_thumbnail(url="attachment://8.png")
         await ctx.send(file=file, embed=embed)
 
+    # error message for pull command
+    @pullItems.error
+    async def pullItems_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            await ctx.send(f'You already pulled twice for the day! Try again in {round(error.retry_after, 1)} seconds.')
+
 def setup(bot):
     bot.add_cog(Shop_Commands(bot))
-    print("1!")
