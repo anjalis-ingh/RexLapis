@@ -7,7 +7,7 @@ Used Discord API (**Python**) to create the core of the bot and **SQLite3** to s
 Rex Lapis has his own currency called as Mora. You will be able to gain mora through a variety of chatting interactions and mini-games you can play with Rex Lapis as well as daily random pulls. All your hard-grinded mora are securely stored in your balance which can be used to gift or buy food from the shop for Rex Lapis!
 
 #### » Express your relationship with Rex Lapis
-Have you ever imagined having a virtual relationship with a loveable, yet knowledgeable dragon deity? Rex Lapis's relationship with members will make your dream comes true! Build a relationship and increase Friendship and Happiness Levels by earning points through chatting, petting, feeding, gifting, and even asking for advice! Rewards can be unlocked at certain Friendship Levels where members can earn get rewarded with mora and dishes as well as unlock new games to play. ♡
+Have you ever imagined having a virtual relationship with a loveable, yet knowledgeable dragon deity? Rex Lapis's relationship with members will make your dream comes true! Build a relationship and increase Friendship and Happiness Levels by earning points through chatting, petting, feeding, gifting, and even asking for advice! Rewards can be unlocked at certain Friendship Levels where members can earn get rewarded with mora and dishes. ♡
 
 <img width="692" alt="Screen Shot 2023-06-10 at 12 47 58 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/9c1c3769-4c1e-4a92-ac14-d6dae4b4ff71">
 
