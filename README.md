@@ -1,5 +1,5 @@
 # Rex Lapis
-Rex Lapis is a Discord bot that can be used both for fun or as a community engagement tool, to keep or revive quiet servers. Once you stand in the presence of the mighty, wise dragon diety who now roams the Discord world, everyone is then responsible for taking care of him as his happiness level is raised collectively as a server. As a devoted friend and believer of Rex Lapis, members can grow their relationship with him through a variety of fun, cute interactions and engage with the Leveling and Economy System at the same time by buying items at the shop and playing mini-games with Rex Lapis! 
+Elevate your Discord experience with Rex Lapis, a Discord bot that can be used both for fun or as a community engagement tool, to keep or revive quiet servers. Once you stand in the presence of the mighty, wise dragon diety who now roams the Discord world, everyone is then responsible for taking care of him as his happiness level is raised collectively as a server. As a devoted friend and believer of Rex Lapis, members can grow their relationship with him through a variety of fun, cute interactions and engage with the Leveling and Economy System at the same time by buying items at the shop and playing mini-games with Rex Lapis! 
 
 Used Discord API (**Python**) to create the core of the bot and **SQLite3** to store user statistics in a SQL database
 
