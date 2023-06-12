@@ -9,12 +9,11 @@ Rex Lapis has his own currency called as Mora. You will be able to gain mora thr
 #### » Express your relationship with Rex Lapis
 Have you ever imagined having a virtual relationship with a loveable, yet knowledgeable dragon deity? Rex Lapis's relationship with members will make your dream comes true! Build a relationship and increase Friendship and Happiness Levels by earning points through chatting, petting, feeding, gifting, and even asking for advice! Rewards can be unlocked at certain Friendship Levels where members can earn get rewarded with mora and dishes. ♡
 
+### DEMO VIDEO: https://youtu.be/CztHFkjoNrY
+
 .help                     | .terms               
 :-------------------------:|:-------------------------:
 <img width="692" alt="Screen Shot 2023-06-10 at 12 47 58 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/9c1c3769-4c1e-4a92-ac14-d6dae4b4ff71"> | <img width="625" alt="Screen Shot 2023-06-11 at 10 19 41 PM" src="https://github.com/anjalis-ingh/RexLapis/assets/96373072/84f7dc7d-9ff8-4865-a443-0b73d5d1331f">
-
-# Demo
-![rex lapis demo](https://github.com/anjalis-ingh/RexLapis/assets/96373072/cb41473b-f712-4cd5-9f66-69203cd5ca0f)
 
 # Commands
 .hello                     | .status                   | .gift
